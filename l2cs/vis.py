@@ -33,7 +33,12 @@ def draw_bbox(frame: np.ndarray, bbox: np.ndarray):
     return frame
 
 def render(frame: np.ndarray, results: GazeResultContainer):
-
+    
+    # Check if there is a detection in the frame/results object. If not, return an image with annotation "No detection".
+    if not results.detection:
+        frame = cv2.putText(frame, "No detection", (10,40), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0,255,0), 2, cv2.LINE_AA)
+        return frame
+        
     # Draw bounding boxes
     for bbox in results.bboxes:
         frame = draw_bbox(frame, bbox)

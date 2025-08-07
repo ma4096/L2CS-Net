@@ -68,7 +68,6 @@ def angular(gaze, label):
 
 def select_device(device='', batch_size=None):
     # device = 'cpu' or '0' or '0,1,2,3'
-    s = f'YOLOv3 🚀 {git_describe() or date_modified()} torch {torch.__version__} '  # string
     cpu = device.lower() == 'cpu'
     if cpu:
         os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # force torch.cuda.is_available() = False
@@ -85,9 +84,8 @@ def select_device(device='', batch_size=None):
         space = ' ' * len(s)
         for i, d in enumerate(devices):
             p = torch.cuda.get_device_properties(i)
-            s += f"{'' if i == 0 else space}CUDA:{d} ({p.name}, {p.total_memory / 1024 ** 2}MB)\n"  # bytes to MB
     else:
-        s += 'CPU\n'
+        pass
 
     return torch.device('cuda:0' if cuda else 'cpu')
 
@@ -143,3 +141,8 @@ def getArch(arch,bins):
                 'The default value of ResNet50 will be used instead!')
         model = L2CS( torchvision.models.resnet.Bottleneck, [3, 4, 6,  3], bins)
     return model
+
+def stackSave(ar:list):
+    """ Wrapper for np.stack to with error handling when trying to stack empty lists. If the length of the passed list == 0, returns None else returns np.stack(ar) as expected
+    """
+    return np.stack(ar) if len(ar) > 0 else None

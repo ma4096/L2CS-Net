@@ -8,7 +8,7 @@ import torch.nn as nn
 from dataclasses import dataclass
 from face_detection import RetinaFace
 
-from .utils import prep_input_numpy, getArch
+from .utils import prep_input_numpy, getArch, stackSave
 from .results import GazeResultContainer
 
 
@@ -87,7 +87,11 @@ class Pipeline:
                     scores.append(score)
 
                 # Predict gaze
-                pitch, yaw = self.predict_gaze(np.stack(face_imgs))
+                if len(face_imgs) != 0:
+                    pitch, yaw = self.predict_gaze(np.stack(face_imgs))
+                else:
+                    pitch = np.empty((0,1)) # kind of random numbers, always assert successfull detection of face/gaze with GazeResultContainer.detection
+                    yaw = np.empty((0,1))
 
             else:
 
@@ -97,13 +101,15 @@ class Pipeline:
         else:
             pitch, yaw = self.predict_gaze(frame)
 
+        detection = len(face_imgs) > 0 # test, if there are any detected faces/eyes
         # Save data
         results = GazeResultContainer(
             pitch=pitch,
             yaw=yaw,
-            bboxes=np.stack(bboxes),
-            landmarks=np.stack(landmarks),
-            scores=np.stack(scores)
+            bboxes=stackSave(bboxes),
+            landmarks=stackSave(landmarks),
+            scores=stackSave(scores),
+            detection=detection
         )
 
         return results
