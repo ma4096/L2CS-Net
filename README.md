@@ -20,6 +20,7 @@ Install package with the following:
 ```
 pip install git+https://github.com/edavalosanaya/L2CS-Net.git@main
 ```
+Or this fork by changing the url accordingly.
 
 Or, you can git clone the repo and install with the following:
 
@@ -41,6 +42,10 @@ Detect face and predict gaze from webcam
 ```python
 from l2cs import Pipeline, render
 import cv2
+import pathlib
+
+
+CWD = pathlib.Path.cwd()
 
 gaze_pipeline = Pipeline(
     weights=CWD / 'models' / 'L2CSNet_gaze360.pkl',
