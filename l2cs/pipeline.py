@@ -47,7 +47,7 @@ class Pipeline:
             self.idx_tensor = [idx for idx in range(90)]
             self.idx_tensor = torch.FloatTensor(self.idx_tensor).to(self.device)
 
-    def step(self, frame: np.ndarray) -> GazeResultContainer:
+    def step(self, frame: np.ndarray, single_face: bool = False) -> GazeResultContainer:
 
         # Creating containers
         face_imgs = []
@@ -58,12 +58,14 @@ class Pipeline:
         if self.include_detector:
             faces = self.detector(frame)
 
-            if faces is not None: 
+            if faces is not None:
                 for box, landmark, score in faces:
 
                     # Apply threshold
                     if score < self.confidence_threshold:
                         continue
+
+                    accepted_scores.append(score)
 
                     # Extract safe min and max of x,y
                     x_min=int(box[0])
@@ -85,6 +87,12 @@ class Pipeline:
                     bboxes.append(box)
                     landmarks.append(landmark)
                     scores.append(score)
+
+                # if single_face, only take the face with the highest score
+                if single_face and len(face_imgs) > 1:
+                    max_score_index = accepted_scores.index(max(accepted_scores))
+                    face_imgs = [face_imgs[max_score_index]]
+                    print(f"More than one face detected, selected face with confidence {max(accepted_scores)} from options: {accepted_scores}")
 
                 # Predict gaze
                 if len(face_imgs) != 0:
