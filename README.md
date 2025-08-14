@@ -20,7 +20,6 @@ Install package with the following:
 ```
 pip install git+https://github.com/edavalosanaya/L2CS-Net.git@main
 ```
-Or this fork by changing the url accordingly.
 
 Or, you can git clone the repo and install with the following:
 
@@ -43,22 +42,26 @@ Detect face and predict gaze from webcam
 from l2cs import Pipeline, render
 import cv2
 import pathlib
-
+import torch
 
 CWD = pathlib.Path.cwd()
 
 gaze_pipeline = Pipeline(
     weights=CWD / 'models' / 'L2CSNet_gaze360.pkl',
     arch='ResNet50',
-    device=torch.device('cpu') # or 'gpu'
+    device=torch.device('cpu') # or 'cuda', 'opengl', ...
 )
  
-cap = cv2.VideoCapture(cam)
+cap = cv2.VideoCapture(0)
 _, frame = cap.read()    
 
 # Process frame and visualize
 results = gaze_pipeline.step(frame)
 frame = render(frame, results)
+
+cv2.imshow("Detected face", frame)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 ```
 
 ## Demo

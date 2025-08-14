@@ -92,7 +92,6 @@ class Pipeline:
                 if single_face and len(face_imgs) > 1:
                     max_score_index = accepted_scores.index(max(accepted_scores))
                     face_imgs = [face_imgs[max_score_index]]
-                    print(f"More than one face detected, selected face with confidence {max(accepted_scores)} from options: {accepted_scores}")
 
                 # Predict gaze
                 if len(face_imgs) != 0:
